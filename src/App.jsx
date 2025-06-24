@@ -6,8 +6,8 @@ import GraficoBarras from './components/GraficoBarras';
 const App = () => {
   const [productos, setProductos] = useState([]);
   const [busqueda, setBusqueda] = useState('');
+  const [mostrarGrafico, setMostrarGrafico] = useState(false);
 
-  // Obtener datos de la API al montar el componente
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -20,18 +20,15 @@ const App = () => {
     fetchData();
   }, []);
 
-  // Manejar el cambio en el input de búsqueda
   const handleBusqueda = (e) => {
     setBusqueda(e.target.value);
   };
 
-  // Filtrar productos según el término de búsqueda
   const productosFiltrados = productos.filter((producto) =>
     producto.title.toLowerCase().includes(busqueda.toLowerCase()) ||
     producto.category.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  // Procesar datos para el gráfico de barras
   const categorias = productos.reduce((acc, producto) => {
     acc[producto.category] = (acc[producto.category] || 0) + 1;
     return acc;
@@ -42,23 +39,29 @@ const App = () => {
   }));
 
   return (
-    <div className="container mx-auto p-4 bg-gray-100 min-h-screen flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl">
-        <h1 className="text-3xl font-bold mb-4 text-center text-gray-800">Productos</h1>
-        <div className="flex justify-between items-center mb-6">
+    <div className="bg-[#F5F5F5] min-h-screen flex justify-center items-center p-4">
+      <div className="bg-white p-5 rounded-lg shadow-md w-full max-w-4xl">
+        <h1 className="text-2xl font-bold text-black mb-4">Productos</h1>
+        <div className="flex items-center justify-between mb-5">
           <input
             type="text"
             placeholder="Buscar por nombre o categoría..."
             value={busqueda}
             onChange={handleBusqueda}
-            className="border p-2 w-2/3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-[70%] h-10 px-3 border border-[#D3D3D3] rounded-md focus:outline-none focus:ring-2 focus:ring-[#007BFF] text-sm"
           />
-          <button className="bg-blue-500 text-white p-2 rounded-lg shadow hover:bg-blue-600">
-            Ver Gráfico
+          <button
+            onClick={() => setMostrarGrafico(!mostrarGrafico)}
+            className="w-[120px] h-10 bg-[#007BFF] text-white rounded-md shadow-md hover:bg-[#0056b3] text-sm font-medium"
+          >
+            {mostrarGrafico ? 'Ver Tabla' : 'Ver Gráfico'}
           </button>
         </div>
-        <TablaProductos productos={productosFiltrados} />
-        <GraficoBarras datos={datosGrafico} />
+        {mostrarGrafico ? (
+          <GraficoBarras datos={datosGrafico} />
+        ) : (
+          <TablaProductos productos={productosFiltrados} />
+        )}
       </div>
     </div>
   );
